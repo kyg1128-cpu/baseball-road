@@ -1,0 +1,7 @@
+import fs from 'node:fs/promises';import path from 'node:path';import assert from 'node:assert/strict';import vm from 'node:vm';
+const portal=await fs.readFile('public/index.html','utf8'),html=await fs.readFile('public/play/index.html','utf8'),release=JSON.parse(await fs.readFile('release.json','utf8'));
+assert(!portal.includes('{{'));for(const name of ['baseball-road.html','baseball-road-web.zip'])assert(portal.includes(`/releases/download/${release.tag}/${name}`));
+let scripts=0;for(const m of html.matchAll(/<script src="([^"]+)"/g)){const code=await fs.readFile(path.join('public/play',m[1]),'utf8');new vm.Script(code,{filename:m[1]});scripts++;}
+for(const m of html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g))await fs.access(path.join('public/play',m[1]));
+for(const token of ['function fieldRecover','function runnerDistance']){const motion=await fs.readFile('public/play/js/ui/'+(token.includes('runner')?'play-flow':'player-motion')+'.js','utf8');assert(motion.includes(token));}
+assert(scripts>100);assert(!portal.includes('localStorage.clear'));console.log(`PASS ${scripts} game scripts, download links, embedded version, and current movement release.`);

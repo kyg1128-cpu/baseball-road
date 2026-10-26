@@ -1,0 +1,17 @@
+{
+  "name": "베이스볼 로드",
+  "version": "2026.10.26",
+  "tag": "v2026.10.26",
+  "repository": "kyg1128-cpu/baseball-road",
+  "build": "42e3db49bf",
+  "files": {
+    "baseball-road-web.zip": {
+      "bytes": 122723536,
+      "sha256": "78ed9d0ac11768cb60c4c0f812c89d2099c9ab50d2dd766555be03b617681b31"
+    },
+    "baseball-road.html": {
+      "bytes": 176707957,
+      "sha256": "d76fccd97885c04c0f7af1c1e32b5dbf90f57c093c23c1e394a24c54b84e2783"
+    }
+  }
+}

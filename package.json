@@ -1,0 +1,16 @@
+{
+  "name": "baseball-road-distribution",
+  "version": "2026.10.26",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node verify.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "jszip": "3.10.1"
+  }
+}
