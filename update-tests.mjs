@@ -1,4 +1,4 @@
-import fs from 'node:fs/promises';import vm from 'node:vm';import assert from 'node:assert/strict';import {webcrypto,createHash} from 'node:crypto';import {gzipSync} from 'node:zlib';import {wrap,unwrap} from './launcher.mjs';
+import fs from 'node:fs/promises';import vm from 'node:vm';import assert from 'node:assert/strict';import {webcrypto,createHash} from 'node:crypto';import {gzipSync} from 'node:zlib';import {wrap,unwrap} from './launcher.mjs';import {planRelease} from './release-plan.mjs';
 const env={crypto:webcrypto,Blob,Response,DecompressionStream,AbortSignal,setTimeout,clearTimeout,URL,atob};vm.runInNewContext(await fs.readFile('launcher-client.js','utf8'),env);const U=env.BBAutoUpdater,hash=async b=>createHash('sha256').update(Buffer.from(await b.arrayBuffer())).digest('hex'),blob=new Blob([gzipSync('<html><head></head><body>new game</body></html>')]),sha=await hash(blob),config={build:'aaaaaaaaaa',runtimeOrigin:'https://baseball-road-kyg1128.onrender.com'},manifest={app:'baseball-road',build:'bbbbbbbbbb',version:'next',runtime:{url:config.runtimeOrigin+'/runtime/game.bin',encoding:'gzip',bytes:blob.size,sha256:sha}};
 let tests=0;const embedded=async()=>({build:config.build,source:'embedded',blob});
 function deps(overrides={}){return{config,embedded,loadCache:async()=>null,saveCache:async()=>{},hash,onState:()=>{},fetchManifest:async()=>manifest,fetchRuntime:async()=>blob,...overrides};}
@@ -12,4 +12,11 @@ r=await U.choose(deps({fetchManifest:async()=>({...manifest,runtime:{...manifest
 assert.equal(await U.inflate(blob),'<html><head></head><body>new game</body></html>');tests++;
 const original='<html><head></head><body>한글 원본</body></html>',wrapped=wrap(original,{...config,version:'test',manifestUrl:'https://raw.githubusercontent.com/kyg1128-cpu/baseball-road/main/release.json'});assert.equal(unwrap(wrapped),original);tests++;
 assert(!wrapped.includes('localStorage.clear'));assert(!wrapped.includes('location.replace'));assert(!wrapped.includes('location.reload'));tests++;
+const prior={build:'aaaaaaaaaa',version:'2026.10.26',tag:'v2026.10.26'},nextSW="const CACHE = 'baseball-road-bbbbbbbbbb';";
+assert.throws(()=>planRelease(prior,nextSW),/new version/);tests++;
+assert.throws(()=>planRelease(prior,nextSW,prior.version),/new version/);tests++;
+assert.deepEqual(planRelease(prior,nextSW,'2026.10.26.1'),{build:'bbbbbbbbbb',version:'2026.10.26.1',tag:'v2026.10.26.1'});tests++;
+assert.deepEqual(planRelease(prior,"const CACHE = 'baseball-road-aaaaaaaaaa';"),prior);tests++;
+assert.throws(()=>planRelease(prior,'not a game service worker','2026.10.26.1'),/build ID/);tests++;
+assert.throws(()=>planRelease(prior,nextSW,'../unsafe'),/Invalid/);tests++;
 await fs.mkdir('.local',{recursive:true});await fs.writeFile('.local/update-tests.json',JSON.stringify({passed:true,tests,scope:'Launch-time selection, integrity, cache/offline recovery, same-URL document execution; no user-save access.'},null,2));console.log(`PASS ${tests} update, offline, integrity, cache, origin and Unicode cases.`);
