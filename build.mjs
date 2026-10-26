@@ -17,6 +17,18 @@ const archive=await JSZip.loadAsync(bytes),entries=Object.values(archive.files).
 if(path.dirname(out)!==root||path.basename(out)!=='public')throw Error('Invalid output path');
 await fs.rm(out,{recursive:true,force:true});await fs.mkdir(path.join(out,'play'),{recursive:true});
 for(const entry of entries){const target=path.resolve(out,'play',entry.name);if(!target.startsWith(path.join(out,'play')+path.sep))throw Error('Unsafe archive path');await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,entry.name==='index.html'?unwrap(await entry.async('string')):await entry.async('nodebuffer'));}
+// Script/style URLs are immutable per verified game build. An edge retaining a
+// previous unversioned file must never mix that code with the new entry page.
+if(!/^[a-f0-9]{10}$/.test(release.build))throw Error('Invalid game build ID');
+const versionRoot=path.join(out,'play','builds',release.build);
+for(const dir of ['js','css','assets','icons']){
+  await fs.cp(path.join(out,'play',dir),path.join(versionRoot,dir),{recursive:true});
+}
+const entryFile=path.join(out,'play','index.html');
+let entryHtml=await fs.readFile(entryFile,'utf8');
+entryHtml=entryHtml.replaceAll('<script src="js/','<script src="builds/'+release.build+'/js/').replaceAll('rel="stylesheet" href="css/','rel="stylesheet" href="builds/'+release.build+'/css/');
+// Manifest, service-worker scope and save origin stay at /play/ across updates.
+await fs.writeFile(entryFile,entryHtml);
 const launcherFile='baseball-road.html';let launcher;
 if(archiveArg>=0)launcher=await fs.readFile(path.join(path.dirname(path.resolve(process.argv[archiveArg+1])),launcherFile));
 else{const response=await fetch(`https://github.com/${release.repository}/releases/download/${release.tag}/${launcherFile}`,{signal:AbortSignal.timeout(240000)});if(!response.ok)throw Error('Launcher download failed: '+response.status);launcher=Buffer.from(await response.arrayBuffer());}
