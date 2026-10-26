@@ -1,10 +1,24 @@
 services:
   - type: web
     runtime: static
-    name: baseball-road
+    name: baseball-road-kyg1128
     buildCommand: npm ci --ignore-scripts && npm run build && npm test
     staticPublishPath: ./public
     headers:
+      # Only the public, hash-verified update binary accepts file:// origins.
+      # No authenticated or game-save endpoint is exposed cross-origin.
+      - path: /runtime/game.bin
+        name: Access-Control-Allow-Origin
+        value: "null"
+      - path: /runtime/game.bin
+        name: Cache-Control
+        value: no-store
+      - path: /runtime/game.bin
+        name: Content-Type
+        value: application/octet-stream
+      - path: /play/*
+        name: Cache-Control
+        value: no-cache
       - path: /index.html
         name: Cache-Control
         value: no-cache

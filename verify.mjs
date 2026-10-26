@@ -4,4 +4,5 @@ assert(!portal.includes('{{'));for(const name of ['baseball-road.html','baseball
 let scripts=0;for(const m of html.matchAll(/<script src="([^"]+)"/g)){const code=await fs.readFile(path.join('public/play',m[1]),'utf8');new vm.Script(code,{filename:m[1]});scripts++;}
 for(const m of html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g))await fs.access(path.join('public/play',m[1]));
 for(const token of ['function fieldRecover','function runnerDistance']){const motion=await fs.readFile('public/play/js/ui/'+(token.includes('runner')?'play-flow':'player-motion')+'.js','utf8');assert(motion.includes(token));}
-assert(scripts>100);assert(!portal.includes('localStorage.clear'));console.log(`PASS ${scripts} game scripts, download links, embedded version, and current movement release.`);
+const sw=await fs.readFile('public/play/sw.js','utf8');assert(sw.includes("cache:'no-cache'"));assert(!sw.includes('ignoreSearch: true'));assert((await fs.stat('public/runtime/game.bin')).size===release.runtime.bytes);
+assert(scripts>100);assert(!portal.includes('localStorage.clear'));console.log(`PASS ${scripts} game scripts, download links, refresh update policy, compressed runtime, and current movement release.`);

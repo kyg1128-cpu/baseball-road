@@ -6,12 +6,21 @@
   "build": "42e3db49bf",
   "files": {
     "baseball-road-web.zip": {
-      "bytes": 122723536,
-      "sha256": "78ed9d0ac11768cb60c4c0f812c89d2099c9ab50d2dd766555be03b617681b31"
+      "bytes": 122727213,
+      "sha256": "59018bf7eac5afc9288c6bae57d4236ca1abbc66136ff77010ddab67b1603bd0"
     },
     "baseball-road.html": {
-      "bytes": 176707957,
-      "sha256": "d76fccd97885c04c0f7af1c1e32b5dbf90f57c093c23c1e394a24c54b84e2783"
+      "bytes": 166167882,
+      "sha256": "7f5c52c3efe01dae28a329e0d6098916826ec988d48ac20bcb1ede84cc68cabd"
     }
+  },
+  "app": "baseball-road",
+  "siteUrl": "https://baseball-road-kyg1128.onrender.com",
+  "updateMode": "launch-and-refresh",
+  "runtime": {
+    "url": "https://baseball-road-kyg1128.onrender.com/runtime/game.bin",
+    "encoding": "gzip",
+    "bytes": 124620453,
+    "sha256": "fa50712912756cb49383676b1908ac3389ce7bf15ea760134bb478f4a562ff77"
   }
 }

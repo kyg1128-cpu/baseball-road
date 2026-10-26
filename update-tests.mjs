@@ -1,0 +1,15 @@
+import fs from 'node:fs/promises';import vm from 'node:vm';import assert from 'node:assert/strict';import {webcrypto,createHash} from 'node:crypto';import {gzipSync} from 'node:zlib';import {wrap,unwrap} from './launcher.mjs';
+const env={crypto:webcrypto,Blob,Response,DecompressionStream,AbortSignal,setTimeout,clearTimeout,URL,atob};vm.runInNewContext(await fs.readFile('launcher-client.js','utf8'),env);const U=env.BBAutoUpdater,hash=async b=>createHash('sha256').update(Buffer.from(await b.arrayBuffer())).digest('hex'),blob=new Blob([gzipSync('<html><head></head><body>new game</body></html>')]),sha=await hash(blob),config={build:'aaaaaaaaaa',runtimeOrigin:'https://baseball-road-kyg1128.onrender.com'},manifest={app:'baseball-road',build:'bbbbbbbbbb',version:'next',runtime:{url:config.runtimeOrigin+'/runtime/game.bin',encoding:'gzip',bytes:blob.size,sha256:sha}};
+let tests=0;const embedded=async()=>({build:config.build,source:'embedded',blob});
+function deps(overrides={}){return{config,embedded,loadCache:async()=>null,saveCache:async()=>{},hash,onState:()=>{},fetchManifest:async()=>manifest,fetchRuntime:async()=>blob,...overrides};}
+let cached;let r=await U.choose(deps({saveCache:async c=>{cached=c;}}));assert.equal(r.build,manifest.build);assert.equal(cached.sha256,sha);tests++;
+r=await U.choose(deps({fetchManifest:async()=>({...manifest,build:config.build}),fetchRuntime:async()=>{throw Error('must not download');}}));assert.equal(r.source,'embedded');tests++;
+r=await U.choose(deps({loadCache:async()=>cached,fetchManifest:async()=>{throw Error('offline');}}));assert.equal(r.build,manifest.build);assert.equal(r.source,'cache');tests++;
+r=await U.choose(deps({fetchRuntime:async()=>new Blob(['damaged']),saveCache:async()=>{throw Error('must not cache corrupt bytes');}}));assert.equal(r.source,'embedded');tests++;
+r=await U.choose(deps({saveCache:async()=>{throw Error('quota exceeded');}}));assert.equal(r.source,'update');tests++;
+r=await U.choose(deps({loadCache:async()=>({...cached,sha256:'0'.repeat(64)}),fetchManifest:async()=>{throw Error('offline');}}));assert.equal(r.source,'embedded');tests++;
+r=await U.choose(deps({fetchManifest:async()=>({...manifest,runtime:{...manifest.runtime,url:'https://example.com/other.bin'}})}));assert.equal(r.source,'embedded');tests++;
+assert.equal(await U.inflate(blob),'<html><head></head><body>new game</body></html>');tests++;
+const original='<html><head></head><body>한글 원본</body></html>',wrapped=wrap(original,{...config,version:'test',manifestUrl:'https://raw.githubusercontent.com/kyg1128-cpu/baseball-road/main/release.json'});assert.equal(unwrap(wrapped),original);tests++;
+assert(!wrapped.includes('localStorage.clear'));assert(!wrapped.includes('location.replace'));assert(!wrapped.includes('location.reload'));tests++;
+await fs.mkdir('.local',{recursive:true});await fs.writeFile('.local/update-tests.json',JSON.stringify({passed:true,tests,scope:'Launch-time selection, integrity, cache/offline recovery, same-URL document execution; no user-save access.'},null,2));console.log(`PASS ${tests} update, offline, integrity, cache, origin and Unicode cases.`);
