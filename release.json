@@ -1,17 +1,17 @@
 {
   "name": "베이스볼 로드",
-  "version": "2026.10.27.3",
-  "tag": "v2026.10.27.3",
+  "version": "2026.10.27.4",
+  "tag": "v2026.10.27.4",
   "repository": "kyg1128-cpu/baseball-road",
-  "build": "9b3e348a27",
+  "build": "90bfc31f62",
   "files": {
     "baseball-road-web.zip": {
-      "bytes": 168378327,
-      "sha256": "ebaff736887490f79d80f5f0414810f74cf7d4d729663ed5d1f0097a0c18bed3"
+      "bytes": 168385545,
+      "sha256": "ef2feabb6943f51fc8444975e08ecd1c48147284544313342f866f6b3438b4ba"
     },
     "baseball-road.html": {
-      "bytes": 227208148,
-      "sha256": "74c595d123fc3e5bbe5bd52e3301853410e1e75ef4dd44a1c3598a6f3480355e"
+      "bytes": 227217216,
+      "sha256": "505a323c3ee66181876cfbb7312c42a7e81c69274acebd532bce960d9aa61e9b"
     }
   },
   "app": "baseball-road",
@@ -20,7 +20,7 @@
   "runtime": {
     "url": "https://baseball-road-kyg1128.onrender.com/runtime/game.bin",
     "encoding": "gzip",
-    "bytes": 170400649,
-    "sha256": "78388cf1f6a816c2f5c697899b059ad194a503f42a3ea8a08a9130525bb77a05"
+    "bytes": 170407451,
+    "sha256": "7805d558086a780c9896b1c7ede6c0c5cb50e4959591cf13093a4a0e0867c5be"
   }
 }
