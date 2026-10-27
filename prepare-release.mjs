@@ -7,7 +7,7 @@ const origin=process.env.BASEBALL_SITE_ORIGIN||release.siteUrl||'https://basebal
 release.app='baseball-road';release.siteUrl=origin;release.updateMode='launch-and-refresh';
 const config={build:release.build,version:release.version,manifestUrl:`https://raw.githubusercontent.com/${release.repository}/main/release.json`,runtimeOrigin:origin};
 const raw=await fs.readFile(path.join(ws,'베이스볼로드.html'),'utf8');if(raw.includes('id="bb-offline-runtime"'))throw Error('Input HTML must be the original game build, not an existing launcher.');const html=wrap(raw,config);await fs.mkdir(assets,{recursive:true});await fs.writeFile(path.join(assets,'baseball-road.html'),html);
-const runtime=compressedRuntime(html);release.runtime={url:origin+'/runtime/game.bin',encoding:'gzip',bytes:runtime.length,sha256:createHash('sha256').update(runtime).digest('hex')};
+const runtime=compressedRuntime(html);release.runtime={url:origin+'/runtime/'+release.build+'/game.bin',encoding:'gzip',bytes:runtime.length,sha256:createHash('sha256').update(runtime).digest('hex')};
 const index=await zip.file('index.html').async('string');zip.file('index.html',wrap(index,config));
 await fs.writeFile(path.join(assets,'baseball-road-web.zip'),await zip.generateAsync({type:'nodebuffer',compression:'DEFLATE',compressionOptions:{level:9}}));
 for(const name of['baseball-road.html','baseball-road-web.zip']){const data=await fs.readFile(path.join(assets,name));release.files[name]={bytes:data.length,sha256:createHash('sha256').update(data).digest('hex')};}

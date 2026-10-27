@@ -18,7 +18,7 @@
   "siteUrl": "https://baseball-road-kyg1128.onrender.com",
   "updateMode": "launch-and-refresh",
   "runtime": {
-    "url": "https://baseball-road-kyg1128.onrender.com/runtime/game.bin",
+    "url": "https://baseball-road-kyg1128.onrender.com/runtime/99c2b7f0ea/game.bin",
     "encoding": "gzip",
     "bytes": 170408829,
     "sha256": "53603df7cf7a18d2562bb3e3d3d54a41027785f2516e9a148c76355fe1a1f2a4"

@@ -7,13 +7,13 @@ services:
     headers:
       # Only the public, hash-verified update binary accepts file:// origins.
       # No authenticated or game-save endpoint is exposed cross-origin.
-      - path: /runtime/game.bin
+      - path: /runtime/*
         name: Access-Control-Allow-Origin
         value: "null"
-      - path: /runtime/game.bin
+      - path: /runtime/*
         name: Cache-Control
         value: no-store
-      - path: /runtime/game.bin
+      - path: /runtime/*
         name: Content-Type
         value: application/octet-stream
       - path: /play/*
